@@ -10,14 +10,25 @@ interface IMOSV3 {
         NEAR
     }
 
-    struct CallData {
+    enum MessageType {
+        CALLDATA,
+        MESSAGE
+    }
+
+    struct MessageData {
+        bool relay;
+        MessageType msgType;
         bytes target;
-        bytes callData;
+        bytes payload;
         uint256 gasLimit;
         uint256 value;
     }
 
-    function transferOut(uint256 _toChain,CallData memory _callData) external payable  returns(bool);
+    function transferOut(uint256 _toChain, bytes memory _messageData,address _feeToken) external payable  returns(bool);
+
+    function addRemoteCaller(uint256 _fromChain, bytes memory _fromAddress,bool _tag) external;
+
+    function getMessageFee(uint256 _toChain, address _feeToken, uint256 _gasLimit) external view returns(uint256, address);
 
     event mapMessageOut(uint256 indexed fromChain, uint256 indexed toChain,bytes32 orderId, bytes callData);
 
