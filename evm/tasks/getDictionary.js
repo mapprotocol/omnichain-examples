@@ -5,7 +5,7 @@ module.exports = async (taskArgs,hre) => {
 
     console.log("deployer address:",deployer.address);
 
-    let dict = await ethers.getContractAt('OmniDictionary', taskArgs.echoAddress);
+    let dict = await ethers.getContractAt('OmniDictionary', taskArgs.address);
 
     let value = await dict.connect(deployer).dictionary(taskArgs.key);
 

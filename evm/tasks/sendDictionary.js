@@ -5,13 +5,14 @@ module.exports = async (taskArgs,hre) => {
 
     console.log("deployer address:",deployer.address);
 
-    let dict = await ethers.getContractAt('OmniDictionary', taskArgs.echoAddress);
+    let dict = await ethers.getContractAt('OmniDictionary', taskArgs.address);
 
         await (await dict.connect(deployer).sendDictionaryInput(
             taskArgs.chainid,
             taskArgs.target,
             taskArgs.key,
-            taskArgs.value
+            taskArgs.value,
+            {gasLimit:2000000,value:1500000000000000}
         )).wait();
 
 

@@ -2,9 +2,10 @@ pragma solidity ^0.8.7;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./interface/IMOSV3.sol";
+import "./interface/IMapoExecutor.sol";
 
 
-contract OmniDictionary is Ownable {
+contract OmniDictionary is Ownable,IMapoExecutor {
 
     address public mos;
 
@@ -20,7 +21,8 @@ contract OmniDictionary is Ownable {
 
     event sendEntry(uint256 indexed toChain, bytes target, string key, string value);
 
-    constructor() {
+    constructor(address _owner) {
+        transferOwnership(_owner);
     }
 
     receive() external payable {}
@@ -74,6 +76,39 @@ contract OmniDictionary is Ownable {
         );
 
         emit sendEntry(_tochainId, _target, _key, _val);
+    }
+
+    function sendDictionaryMessage(uint256 _tochainId,bytes memory _target,string memory _key,string memory _val) external payable {
+
+        bytes memory data = abi.encode(_key,_val);
+
+        IMOSV3.MessageData memory mData = IMOSV3.MessageData(false,IMOSV3.MessageType.MESSAGE,_target,data,500000,0);
+
+        bytes memory mDataBytes = abi.encode(mData);
+
+        (uint256 amount,address receiverAddress) = IMOSV3(mos).getMessageFee(_tochainId,address(0),500000);
+
+        require(
+            IMOSV3(mos).transferOut{value:amount}(
+                _tochainId,
+                mDataBytes,
+                address(0)
+            ),
+            "send request failed"
+        );
+
+        emit sendEntry(_tochainId, _target, _key, _val);
+    }
+
+
+
+    function mapoExecute(uint256 _fromChain, uint256 _toChain, bytes calldata _fromAddress, bytes32 _orderId, bytes calldata _message) external override {
+            bool isExecute = IMOSV3(mos).callerList(address(this),_fromChain,_fromAddress);
+            require(isExecute,"Do not have execute permission");
+
+            (string memory key,string memory val) = abi.decode(_message,(string,string));
+
+            dictionary[key] = val;
     }
 
     function addRemoteCaller(uint256 _fromChain, bytes memory _fromAddress,bool _tag) external {
