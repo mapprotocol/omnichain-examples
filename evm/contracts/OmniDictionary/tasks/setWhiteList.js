@@ -19,8 +19,8 @@ module.exports = async (taskArgs,hre) => {
 
     let omni = await ethers.getContractAt('OmniDictionary', omniAddress);
 
-    await (await omni.connect(deployer).addRemoteCaller( taskArgs.fromchain, taskArgs.omni, taskArgs.tag)).wait();
+    await (await omni.connect(deployer).setWhiteList(taskArgs.mos,"true")).wait();
 
-    console.log(`OmniDictionary ${omniAddress} addRemoteCaller successfully `);
+    console.log(`OmniDictionary ${omniAddress} setWhiteList successfully `);
 
 }

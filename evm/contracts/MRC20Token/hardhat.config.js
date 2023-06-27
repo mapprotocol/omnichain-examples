@@ -22,10 +22,14 @@ module.exports = {
     clear: false,
     flat: true
   },
+  gasReporter: {
+    enabled: false,
+//    currency: 'USD',
+  },
   networks: {
     hardhat: {
       forking: {
-        enabled: false,
+        enabled: true,
         url: `https://data-seed-prebsc-1-s1.binance.org:8545`
       },
       netallowUnlimitedContractSize: true,
@@ -33,7 +37,7 @@ module.exports = {
       saveDeployments: false,
       tags: ['local'],
       timeout: 2000000,
-      chainId:212
+      chainId:97
     },
     Map: {
       url: `https://rpc.maplabs.io/`,
@@ -51,7 +55,7 @@ module.exports = {
       accounts: accounts
     },
     MaticTest: {
-      url: `https://rpc-mumbai.maticvigil.com/`,
+      url: `https://polygon-testnet.public.blastapi.io`,
       chainId : 80001,
       accounts: accounts
     },
@@ -61,10 +65,10 @@ module.exports = {
       accounts: accounts
     },
     BscTest: {
-      url: `https://data-seed-prebsc-2-s1.binance.org:8545/`,
+      url: `https://data-seed-prebsc-1-s1.binance.org:8545`,
       chainId : 97,
-      accounts: accounts,
-      gasPrice: 11 * 1000000000
+      accounts: accounts
+     // gasPrice: 11 * 1000000000
     },
     Eth: {
       url: `https://mainnet.infura.io/v3/` + INFURA_KEY,
@@ -82,7 +86,7 @@ module.exports = {
       accounts: accounts
     },
     KlayTest: {
-      url: `https://api.baobab.klaytn.net:8651/`,
+      url: `https://klaytn-baobab.blockpi.network/v1/rpc/public`,
       chainId : 1001,
       accounts: accounts
     }
@@ -90,7 +94,7 @@ module.exports = {
   solidity: {
     compilers: [
       {
-        version: '0.8.7',
+        version: '0.8.0',
         settings: {
           optimizer: {
             enabled: true,
@@ -99,7 +103,7 @@ module.exports = {
         }
       },
       {
-        version: '0.4.22',
+        version: '0.8.1',
         settings: {
           optimizer: {
             enabled: true,
@@ -110,7 +114,7 @@ module.exports = {
     ]
   },
   spdxLicenseIdentifier: {
-    overwrite: true,
+    overwrite: false,
     runOnCompile: false
   },
   mocha: {

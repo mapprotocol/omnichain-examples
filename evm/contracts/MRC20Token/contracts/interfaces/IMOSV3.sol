@@ -55,4 +55,6 @@ interface IMOSV3 {
 
     event mapMessageIn(uint256 indexed fromChain, uint256 indexed toChain, bytes32 orderId, bytes fromAddrss, bytes callData, bool result, bytes reason);
 
+    function feeService() external view returns(address);
+
 }

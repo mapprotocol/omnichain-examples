@@ -23,14 +23,17 @@ module.exports = async (taskArgs, hre) => {
 
     console.log("deploy factory address:",factory.address)
 
-    await (await factory.connect(deployer).deploy(hash,deployData,0)).wait();
+    //await (await factory.connect(deployer).deploy(hash,deployData,0)).wait();
 
     let OmniAddress = await factory.connect(deployer).getAddress(hash)
 
-    let omni = await ethers.getContractAt('OmniDictionary', OmniAddress);
+    console.log("OmniAddress:",OmniAddress);
 
-    let owner = await omni.connect(deployer).owner();
+    let omni = await ethers.getContractAt('OmniDictionary',OmniAddress);
 
+    let admin = await omni.connect(deployer).owner();
+
+    console.log(admin)
     await (await omni.connect(deployer).setMapoService(taskArgs.mos)).wait()
 
     console.log("OmniDictionary set MOS successful");
@@ -39,7 +42,7 @@ module.exports = async (taskArgs, hre) => {
 
     console.log("OmniDictionary set whitelist successful");
 
-    console.log(`OmniDictionary contract address is ${OmniAddress} init admin address is ${owner} deploy contract salt is ${hash}`)
+    console.log(`OmniDictionary contract address is ${OmniAddress} init admin address is ${admin} deploy contract salt is ${hash}`)
 
 }
 

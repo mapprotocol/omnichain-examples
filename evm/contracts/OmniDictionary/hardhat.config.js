@@ -22,10 +22,14 @@ module.exports = {
     clear: false,
     flat: true
   },
+  gasReporter: {
+    enabled: false,
+//    currency: 'USD',
+  },
   networks: {
     hardhat: {
       forking: {
-        enabled: true,
+        enabled: false,
         url: `https://data-seed-prebsc-1-s1.binance.org:8545`
       },
       netallowUnlimitedContractSize: true,
@@ -33,7 +37,7 @@ module.exports = {
       saveDeployments: false,
       tags: ['local'],
       timeout: 2000000,
-      chainId:97
+      chainId:212
     },
     Map: {
       url: `https://rpc.maplabs.io/`,
@@ -90,7 +94,16 @@ module.exports = {
   solidity: {
     compilers: [
       {
-        version: '0.8.0',
+        version: '0.8.7',
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200
+          }
+        }
+      },
+      {
+        version: '0.4.22',
         settings: {
           optimizer: {
             enabled: true,
