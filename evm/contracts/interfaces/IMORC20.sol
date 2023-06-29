@@ -31,14 +31,14 @@ interface IMORC20  is IERC165 {
         address _feeToken
     ) external payable;
 
-//    function interchainTransferAndCall(
-//        uint256 _fromChainId,
-//        address _fromAddress,
-//        uint256 _toChainId,
-//        bytes memory _toAddress,
-//        uint256 _fromAmount,
-//        uint256 _gasLimit,
-//        bytes memory _messageData
-//    ) external payable;
+    function interchainTransferAndCall(
+        address _fromAddress,
+        uint256 _toChainId,
+        bytes memory _toAddress,
+        uint256 _fromAmount,
+        address _feeToken,
+        uint256 _gasLimit,
+        bytes memory _messageData
+    ) external payable;
 
 }
