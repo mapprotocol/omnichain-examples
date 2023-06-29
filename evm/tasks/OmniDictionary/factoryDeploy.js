@@ -23,7 +23,7 @@ module.exports = async (taskArgs, hre) => {
 
     console.log("deploy factory address:",factory.address)
 
-    //await (await factory.connect(deployer).deploy(hash,deployData,0)).wait();
+    await (await factory.connect(deployer).deploy(hash,deployData,0)).wait();
 
     let OmniAddress = await factory.connect(deployer).getAddress(hash)
 

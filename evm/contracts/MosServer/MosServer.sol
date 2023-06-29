@@ -59,7 +59,7 @@ abstract contract MosServer is Ownable, IMapoExecutor {
         bytes memory _payload,
         uint256 _gasLimit,
         address _feeToken
-    )internal virtual {
+    )internal virtual returns(bytes32) {
         bytes memory tempFromAddress = trustedList[_toChianId];
         require(tempFromAddress.length > 0, "MosServer: The destination address is untrusted");
         bytes memory messageDataBytes;
@@ -74,7 +74,7 @@ abstract contract MosServer is Ownable, IMapoExecutor {
         (uint256 fee,) = mos.getMessageFee(_toChianId,_feeToken,_gasLimit);
         require(fee > 0,"MosServer: void fee");
 
-        mos.transferOut{value:fee}(_toChianId,messageDataBytes,_feeToken);
+        return mos.transferOut{value:fee}(_toChianId,messageDataBytes,_feeToken);
 
     }
 

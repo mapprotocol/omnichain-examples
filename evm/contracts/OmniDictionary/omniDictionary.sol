@@ -1,8 +1,9 @@
-pragma solidity ^0.8.7;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./interface/IMOSV3.sol";
-import "./interface/IMapoExecutor.sol";
+import "../interfaces/IMOSV3.sol";
+import "../interfaces/IMapoExecutor.sol";
 
 
 contract OmniDictionary is Ownable,IMapoExecutor {
@@ -36,7 +37,7 @@ contract OmniDictionary is Ownable,IMapoExecutor {
     }
 
     //encode dictionary input (key,value) together with 'setDictionaryEntry' method
-    function encodeDictionaryInput(string memory _key,string memory _val) public view returns(bytes memory data){
+    function encodeDictionaryInput(string memory _key,string memory _val) public pure returns(bytes memory data){
 
         data = abi.encodeWithSelector(OmniDictionary.setDictionaryEntry.selector,_key,_val);
     }
@@ -64,16 +65,9 @@ contract OmniDictionary is Ownable,IMapoExecutor {
 
         bytes memory mDataBytes = abi.encode(mData);
 
-        (uint256 amount,address receiverAddress) = IMOSV3(mos).getMessageFee(_tochainId,address(0),500000);
+        (uint256 amount,) = IMOSV3(mos).getMessageFee(_tochainId,address(0),500000);
 
-        require(
-            IMOSV3(mos).transferOut{value:amount}(
-                _tochainId,
-                mDataBytes,
-                address(0)
-            ),
-            "send request failed"
-        );
+        IMOSV3(mos).transferOut{value:amount}(_tochainId, mDataBytes, address(0));
 
         emit sendEntry(_tochainId, _target, _key, _val);
     }
@@ -86,29 +80,24 @@ contract OmniDictionary is Ownable,IMapoExecutor {
 
         bytes memory mDataBytes = abi.encode(mData);
 
-        (uint256 amount,address receiverAddress) = IMOSV3(mos).getMessageFee(_tochainId,address(0),500000);
+        (uint256 amount,) = IMOSV3(mos).getMessageFee(_tochainId,address(0),500000);
 
-        require(
-            IMOSV3(mos).transferOut{value:amount}(
-                _tochainId,
-                mDataBytes,
-                address(0)
-            ),
-            "send request failed"
-        );
+        IMOSV3(mos).transferOut{value:amount}(_tochainId, mDataBytes, address(0));
 
         emit sendEntry(_tochainId, _target, _key, _val);
     }
 
 
 
-    function mapoExecute(uint256 _fromChain, uint256 _toChain, bytes calldata _fromAddress, bytes32 _orderId, bytes calldata _message) external override {
+    function mapoExecute(uint256 _fromChain, uint256 , bytes calldata _fromAddress, bytes32, bytes calldata _message) external override returns(bytes memory newMessage){
             bool isExecute = IMOSV3(mos).callerList(address(this),_fromChain,_fromAddress);
             require(isExecute,"Do not have execute permission");
 
             (string memory key,string memory val) = abi.decode(_message,(string,string));
 
             dictionary[key] = val;
+
+            return _message;
     }
 
     function addRemoteCaller(uint256 _fromChain, bytes memory _fromAddress,bool _tag) external {

@@ -29,7 +29,7 @@ module.exports = {
   networks: {
     hardhat: {
       forking: {
-        enabled: true,
+        enabled: false,
         url: `https://data-seed-prebsc-1-s1.binance.org:8545`
       },
       netallowUnlimitedContractSize: true,
@@ -55,7 +55,7 @@ module.exports = {
       accounts: accounts
     },
     MaticTest: {
-      url: `https://polygon-testnet.public.blastapi.io`,
+      url: `https://rpc.ankr.com/polygon_mumbai`,
       chainId : 80001,
       accounts: accounts
     },
@@ -94,7 +94,7 @@ module.exports = {
   solidity: {
     compilers: [
       {
-        version: '0.8.0',
+        version: '0.8.7',
         settings: {
           optimizer: {
             enabled: true,
@@ -103,14 +103,14 @@ module.exports = {
         }
       },
       {
-        version: '0.8.1',
+        version: '0.8.12',
         settings: {
           optimizer: {
             enabled: true,
             runs: 200
           }
         }
-      }
+      },
     ]
   },
   spdxLicenseIdentifier: {
