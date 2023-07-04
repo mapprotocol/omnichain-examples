@@ -7,7 +7,7 @@ module.exports = async (taskArgs,hre) => {
     console.log("deployer address:",deployer.address);
 
     let dict = await ethers.getContractAt('OmniDictionary', taskArgs.address);
-    let mos = await ethers.getContractAt('IMOSV3', "0xcDf0b81Fea68865158fa00Bd63627d6659A1Bf69");
+    let mos = await ethers.getContractAt('IMOSV3', "0x8C3cCc219721B206DA4A2070fD96E4911a48CB4f");
 
 
     let amount = await mos.getMessageFee(taskArgs.chainid,"0x0000000000000000000000000000000000000000",500000)

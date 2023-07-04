@@ -6,7 +6,7 @@ import "../MRC20Token/MORC20Token.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol";
 
 contract Morc20Cappde is MORC20Token,ERC20Capped {
-    constructor(string memory _name, string memory _symbol, uint _cap, address _mosAddress) MORC20Token(_name, _symbol, _mosAddress) ERC20Capped(_cap) {
+    constructor(string memory _name, string memory _symbol, uint256 _cappde, address _mosAddress) MORC20Token(_name, _symbol, _mosAddress) ERC20Capped(_cappde) {
 
     }
 
