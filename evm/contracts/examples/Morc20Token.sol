@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "../MRC20Token/MORC20Token.sol";
+import "../morc20/MORC20Token.sol";
 
 contract Morc20Token is MORC20Token {
     constructor(

@@ -38,14 +38,14 @@ contract MORC20Proxy is MORC20Core {
         bytes memory,
         uint256 _fromAmount
     ) internal virtual override returns (uint256 amount,uint256 decimals) {
-        require(_fromAddress == _msgSender(), "ProxyOFT: owner is not send caller");
+        require(_fromAddress == _msgSender(), "MORC20Proxy: owner is not send caller");
 
         _fromAmount = _transferFrom(_fromAddress, address(this), _fromAmount);
 
         // check total outbound amount
         outboundAmount += _fromAmount;
 
-        return (amount,anchoringDecimals);
+        return (amount, anchoringDecimals);
     }
 
     function _receiveCrossChainToken(

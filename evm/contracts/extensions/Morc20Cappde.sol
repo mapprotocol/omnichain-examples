@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.0;
 
-import "../MRC20Token/MORC20Token.sol";
+import "../morc20/MORC20Token.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol";
 
 contract Morc20Cappde is MORC20Token,ERC20Capped {

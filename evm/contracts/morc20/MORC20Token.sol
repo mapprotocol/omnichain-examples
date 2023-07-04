@@ -28,9 +28,11 @@ contract MORC20Token is MORC20Core, ERC20 {
         uint256 _fromAmount
     ) internal virtual override returns (uint256 amount,uint256 decimals){
         address spender = _msgSender();
-        if (_fromAddress != spender) _spendAllowance(_fromAddress, spender, _fromAmount);
+        if (_fromAddress != spender) {
+            _spendAllowance(_fromAddress, spender, _fromAmount);
+        }
         _burn(_fromAddress, _fromAmount);
-        return (_fromAmount,anchoringDecimals);
+        return (_fromAmount, anchoringDecimals);
     }
 
     function _receiveCrossChainToken(
@@ -38,10 +40,10 @@ contract MORC20Token is MORC20Core, ERC20 {
         uint256 ,
         uint256 _amount,
         uint256 _decimals
-    ) internal virtual override returns (uint256 amount,uint256 decimals){
+    ) internal virtual override returns (uint256 amount,uint256 decimals) {
         amount = _amount * 10 ** anchoringDecimals / 10 ** _decimals;
         _mint(_receiveAddress, amount);
-        return (amount,anchoringDecimals);
+        return (amount, anchoringDecimals);
     }
 
     function _transferFrom(address _from, address _to, uint256 _amount) internal virtual override returns (uint256) {

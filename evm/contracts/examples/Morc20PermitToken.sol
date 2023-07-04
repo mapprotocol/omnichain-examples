@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.8;
 
-import "../MRC20Token/MORC20Token.sol";
+import "../morc20/MORC20Token.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 
 contract Morc20PermitToken is MORC20Token, ERC20Permit {

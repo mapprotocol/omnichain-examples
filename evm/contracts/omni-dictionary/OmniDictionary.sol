@@ -2,11 +2,11 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "../interfaces/IMOSV3.sol";
-import "../interfaces/IMapoExecutor.sol";
+import "@mapprotocol/mos/contracts/interface/IMOSV3.sol";
+import "@mapprotocol/mos/contracts/interface/IMapoExecutor.sol";
 
 
-contract OmniDictionary is Ownable,IMapoExecutor {
+contract OmniDictionary is Ownable, IMapoExecutor {
 
     address public mos;
 
@@ -90,14 +90,14 @@ contract OmniDictionary is Ownable,IMapoExecutor {
 
 
     function mapoExecute(uint256 _fromChain, uint256 , bytes calldata _fromAddress, bytes32, bytes calldata _message) external override returns(bytes memory newMessage){
-            bool isExecute = IMOSV3(mos).callerList(address(this),_fromChain,_fromAddress);
-            require(isExecute,"Do not have execute permission");
+        bool isExecute = IMOSV3(mos).getExecutePermission(address(this), _fromChain, _fromAddress);
+        require(isExecute,"Do not have execute permission");
 
-            (string memory key,string memory val) = abi.decode(_message,(string,string));
+        (string memory key,string memory val) = abi.decode(_message,(string,string));
 
-            dictionary[key] = val;
+        dictionary[key] = val;
 
-            return _message;
+        return _message;
     }
 
     function addRemoteCaller(uint256 _fromChain, bytes memory _fromAddress,bool _tag) external {

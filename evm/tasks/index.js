@@ -1,15 +1,5 @@
 const { OMNICHAIN_SALT,DEPLOY_FACTORY,MAPOSERVICE } = process.env;
 
-task("senCrossToken",
-    "deploy omniDictionary",
-    require("./senCrossToken")
-)
-
-task("setTrustedList",
-    "deploy omniDictionary",
-    require("./setTrustedList")
-)
-
 task("deployDictionary",
     "deploy omniDictionary",
     require("./OmniDictionary/deployDictionary")
