@@ -1,4 +1,4 @@
-const { OMNICHAIN_SALT,DEPLOY_FACTORY} = process.env;
+const { OMNICHAIN_SALT,DEPLOY_FACTORY,MAPOSERVICE } = process.env;
 
 task("senCrossToken",
     "deploy omniDictionary",
@@ -67,4 +67,26 @@ task("setWhiteList",
 )
     .addParam("mos", "mos address")
     .addOptionalParam("salt", "deploy contract salt",OMNICHAIN_SALT , types.string)
+    .addOptionalParam("factory", "mos contract address",DEPLOY_FACTORY , types.string)
+
+task("deployMorc20Token",
+    "Deploy morc20 token",
+    require("./MRC20Token/deployMorc20Token")
+)
+    .addParam("name","This is the token name")
+    .addParam("symbol","This is the token symbol")
+    .addOptionalParam("mos","This is the mos address",MAPOSERVICE,types.string)
+    .addOptionalParam("salt","This is the deploy token contract salt ","",types.string)
+    .addOptionalParam("factory", "mos contract address",DEPLOY_FACTORY , types.string)
+
+task("deployMorc20TraitToken",
+    "Deploy some trait Morc20 token",
+    require("./MRC20Token/deployMorc20TraitToken")
+)
+    .addParam("token","This is the token name")
+    .addParam("name","This is the token name")
+    .addParam("symbol","This is the token symbol")
+    .addParam("totalsupply","This is the token totalsupply")
+    .addOptionalParam("mos","This is the mos address",MAPOSERVICE,types.string)
+    .addOptionalParam("salt","This is the deploy token contract salt ","",types.string)
     .addOptionalParam("factory", "mos contract address",DEPLOY_FACTORY , types.string)

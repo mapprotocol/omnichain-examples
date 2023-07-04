@@ -10,11 +10,21 @@ contract  Morc20BurnableToken is MORC20Token, ERC20Burnable {
         string memory _name,
         string memory _symbol,
         address _mosAddress,
-        uint256 _initialSupply
+        uint256 _initialSupply,
+        address _owner
     )
     MORC20Token(_name, _symbol,_mosAddress)
     {
-        _mint(msg.sender,_initialSupply);
+        _transferOwnership(_owner);
+        _mint(_owner,_initialSupply);
+    }
+
+    function _transferOwnership(address _newOwner)
+    internal
+    virtual
+    override
+    {
+        super._transferOwnership(_newOwner);
     }
 
 }

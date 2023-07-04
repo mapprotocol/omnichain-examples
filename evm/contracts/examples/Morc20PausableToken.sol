@@ -8,11 +8,21 @@ contract Morc20PausableToken is Morc20Pausable {
         string memory _name,
         string memory _symbol,
         address _mosAddress,
-        uint256 _initialSupply
+        uint256 _initialSupply,
+        address _owner
     )
     Morc20Pausable(_name, _symbol,_mosAddress)
     {
-        _mint(msg.sender,_initialSupply);
+        _transferOwnership(_owner);
+        _mint(_owner,_initialSupply);
+    }
+
+    function _transferOwnership(address _newOwner)
+    internal
+    virtual
+    override
+    {
+        super._transferOwnership(_newOwner);
     }
 
 }
