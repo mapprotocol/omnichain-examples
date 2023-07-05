@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import "../morc20/MORC20Token.sol";
 
-contract Morc20Token is MORC20Token {
+contract MORC20CommonToken is MORC20Token {
     constructor(
         string memory _name,
         string memory _symbol,
@@ -28,12 +28,5 @@ contract Morc20Token is MORC20Token {
         _burn(account, amount);
     }
 
-    function _transferOwnership(address _newOwner)
-    internal
-    virtual
-    override
-    {
-        super._transferOwnership(_newOwner);
-    }
 
 }

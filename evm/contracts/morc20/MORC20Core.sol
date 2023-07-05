@@ -23,7 +23,6 @@ abstract contract MORC20Core is MapoExecutor, ERC165, IMORC20 {
     event ReceiveTokenAndCallError(uint256 indexed fromchain,address indexed srcAddress,bytes32 indexed orderId,bytes callData,bytes reason);
 
     constructor(address _mosAddress) MapoExecutor(_mosAddress) {
-
     }
 
     function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165, IERC165) returns (bool) {
@@ -39,7 +38,6 @@ abstract contract MORC20Core is MapoExecutor, ERC165, IMORC20 {
         address _feeToken
     ) public payable virtual override {
         _interchainTransfer(_fromAddress, _toChainId, _toAddress, _fromAmount,_feeToken,INTERCHAIN_GASLIMIT);
-
     }
 
     function interchainTransferAndCall(
@@ -51,7 +49,6 @@ abstract contract MORC20Core is MapoExecutor, ERC165, IMORC20 {
         uint256 _gasLimit,
         bytes memory _messageData
     ) external payable virtual override {
-
         _interchainTransferAndCall(_fromAddress,_toChainId,_toAddress,_fromAmount,_feeToken,_gasLimit,_messageData);
     }
 
@@ -61,8 +58,7 @@ abstract contract MORC20Core is MapoExecutor, ERC165, IMORC20 {
     }
 
 
-    function callMorc20Receiver(uint256 _fromChainId, bytes memory _fromAddress, uint256 _amount, address _srcAddress, address _receiveAddress, bytes32 _orderId, bytes calldata _message) public virtual {
-
+    function callOnMorc20Received(uint256 _fromChainId, bytes memory _fromAddress, uint256 _amount, address _srcAddress, address _receiveAddress, bytes32 _orderId, bytes calldata _message) public virtual {
         require(_msgSender() == address(this), "MORC20Core: caller must be MORC20Core");
 
         // send
@@ -70,7 +66,7 @@ abstract contract MORC20Core is MapoExecutor, ERC165, IMORC20 {
         emit ReceiveToken(_orderId, _fromChainId, _fromAddress, _receiveAddress, amount);
 
         // call
-        IMorc20Receiver(_receiveAddress).morc20Receiver{gas:gasleft()}(_fromChainId, _fromAddress, _amount,  _srcAddress,_orderId, _message);
+        IMorc20Receiver(_receiveAddress).onMORC20Received{gas:gasleft()}(_fromChainId, _fromAddress, _amount,  _srcAddress,_orderId, _message);
     }
 
     function _interchainTransfer(
@@ -81,13 +77,13 @@ abstract contract MORC20Core is MapoExecutor, ERC165, IMORC20 {
         address _feeToken,
         uint256 _gasLimit
     ) internal virtual  {
-        (uint256 amount, uint256 decimals) = _sendCrossChainToken(_fromAddress, _toChainId, _toAddress, _fromAmount); // amount returned should not have dust
+        _checkMessageFee(_toChainId, _feeToken, _gasLimit);
+        (uint256 amount, uint256 decimals) = _sendCrossChainToken(_fromAddress, _toChainId, _toAddress, _fromAmount);
+
         require(amount > 0, "MORC20Core: amount too small");
 
         bytes memory prePayload =abi.encode(_fromAddress, _toAddress, amount, decimals);
-
         bytes memory payload = abi.encode(INTERCHAIN_T,prePayload);
-
         bytes32 orderId = _mosTransferOut(_toChainId,MESSAGE_TYPE_MESSAGE,payload,_gasLimit,_feeToken);
 
         emit InterchainTransfer(orderId,_fromAddress,_toChainId,_toAddress,_fromAmount,decimals);
@@ -102,34 +98,31 @@ abstract contract MORC20Core is MapoExecutor, ERC165, IMORC20 {
         uint256 _gasLimit,
         bytes memory _messageData
     )internal virtual {
+        _checkMessageFee(_toChainId, _feeToken, _gasLimit);
         (uint256 amount,uint256 decimals) = _sendCrossChainToken(_fromAddress, _toChainId, _toAddress, _fromAmount); // amount returned should not have dust
         require(amount > 0, "MORC20Core: amount too small");
 
         bytes memory prePayload =abi.encode(msg.sender, _toAddress, amount, decimals, _messageData);
-
         bytes memory payload = abi.encode(INTERCHAIN_C, prePayload);
-
         bytes32 orderId = _mosTransferOut(_toChainId, MESSAGE_TYPE_MESSAGE, payload, _gasLimit, _feeToken);
 
         emit InterchainTransfer(orderId, _fromAddress, _toChainId, _toAddress, _fromAmount, decimals);
     }
 
-    function _interchainTransferExecute(
+    function _interchainReceiveExecute(
         uint256 _fromChain,
         bytes memory _fromAddress,
         bytes32 _orderId,
         bytes memory _payload
     ) internal virtual {
         (, bytes memory receiveBytes, uint256 amount, uint256 decimals) = abi.decode(_payload, (address,bytes,uint256,uint256));
-
         address receiveAddress = _fromBytes(receiveBytes);
-
         _receiveCrossChainToken(receiveAddress,_fromChain,amount,decimals);
 
         emit ReceiveToken(_orderId,_fromChain,_fromAddress,receiveAddress,amount);
     }
 
-    function _interchainTransferAndCallExecute(
+    function _interchainReceiveAndCallExecute(
         uint256 _fromChain,
         bytes memory _fromAddress,
         bytes32 _orderId,
@@ -146,14 +139,14 @@ abstract contract MORC20Core is MapoExecutor, ERC165, IMORC20 {
             return;
         }
 
-        bytes memory  callMorc20ReceiverSelector = abi.encodeWithSelector(this.callMorc20Receiver.selector, _fromChain, _fromAddress, amount_, srcAddress,receiveAddress, _orderId, messageData);
+        bytes memory  callOnMorc20ReceivedSelector = abi.encodeWithSelector(this.callOnMorc20Received.selector, _fromChain, _fromAddress, amount_, srcAddress,receiveAddress, _orderId, messageData);
 
-        (bool success, bytes memory reason) = address(this).excessivelySafeCall(gasleft(), 150, callMorc20ReceiverSelector);
+        (bool success, bytes memory reason) = address(this).excessivelySafeCall(gasleft(), 150, callOnMorc20ReceivedSelector);
 
         if(success){
-            emit ReceiveTokenAndCall(_fromChain,srcAddress,_orderId,keccak256(callMorc20ReceiverSelector));
+            emit ReceiveTokenAndCall(_fromChain,srcAddress,_orderId,keccak256(callOnMorc20ReceivedSelector));
         }else{
-            emit ReceiveTokenAndCallError(_fromChain,srcAddress,_orderId,callMorc20ReceiverSelector,reason);
+            emit ReceiveTokenAndCallError(_fromChain,srcAddress,_orderId,callOnMorc20ReceivedSelector,reason);
         }
     }
 
@@ -167,20 +160,21 @@ abstract contract MORC20Core is MapoExecutor, ERC165, IMORC20 {
         bytes memory _fromAddress,
         bytes32 _orderId,
         bytes memory _message
-    ) internal virtual override returns(bytes memory newMessage) {
+    ) internal virtual override returns(bytes memory) {
         require(!orderList[_orderId], "MORC20Core: invalid orderId");
 
         (uint256 interchainType, bytes memory payload) = abi.decode(_message, (uint256,bytes));
 
         if (interchainType == INTERCHAIN_T) {
-            _interchainTransferExecute(_fromChain,_fromAddress,_orderId,payload);
+            _interchainReceiveExecute(_fromChain,_fromAddress,_orderId,payload);
         }else if (interchainType == INTERCHAIN_C) {
-            _interchainTransferAndCallExecute(_fromChain,_fromAddress,_orderId,payload);
+            _interchainReceiveAndCallExecute(_fromChain,_fromAddress,_orderId,payload);
         }else {
             revert("MORC20Core: unknown message type");
         }
 
         orderList[_orderId] = true;
+        return payload;
     }
 
     function _fromBytes(bytes memory bys) internal pure returns (address addr) {

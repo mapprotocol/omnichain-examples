@@ -5,7 +5,7 @@ pragma solidity ^0.8.0;
 import "../morc20/MORC20Token.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 
-contract Morc20Pausable is MORC20Token,Pausable {
+contract MORC20Pausable is MORC20Token,Pausable {
     constructor(string memory _name, string memory _symbol, address _mosAddress) MORC20Token(_name, _symbol,_mosAddress) {
     }
 

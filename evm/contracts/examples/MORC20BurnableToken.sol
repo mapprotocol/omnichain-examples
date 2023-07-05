@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "../extensions/Morc20Cappde.sol";
+import "../morc20/MORC20Token.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 
-contract Morc20CappdeToken is Morc20Cappde {
+contract MORC20BurnableToken is MORC20Token, ERC20Burnable {
 
     constructor(
         string memory _name,
@@ -12,18 +13,10 @@ contract Morc20CappdeToken is Morc20Cappde {
         uint256 _initialSupply,
         address _owner
     )
-    Morc20Cappde(_name, _symbol,_initialSupply,_mosAddress)
+    MORC20Token(_name, _symbol,_mosAddress)
     {
         _transferOwnership(_owner);
         _mint(_owner,_initialSupply);
-    }
-
-    function _transferOwnership(address _newOwner)
-    internal
-    virtual
-    override
-    {
-        super._transferOwnership(_newOwner);
     }
 
 }

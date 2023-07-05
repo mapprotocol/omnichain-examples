@@ -6,18 +6,18 @@ module.exports = async (taskArgs, hre) => {
     console.log("deployer address:", deployer.address);
 
     if (taskArgs.salt === ""){
-        await deploy('Morc20Token', {
+        await deploy('MORC20CommonToken', {
             from: deployer.address,
             args: [taskArgs.name,taskArgs.symbol,taskArgs.mos,deployer.address],
             log: true,
-            contract: 'Morc20Token',
+            contract: 'MORC20CommonToken',
         })
 
-        let morc20Token = await ethers.getContract('Morc20Token');
+        let morc20Token = await ethers.getContract('MORC20CommonToken');
 
-        console.log("Morc20Token address:", morc20Token.address);
+        console.log("MORC20CommonToken address:", morc20Token.address);
     }else{
-        let Morc20 = await ethers.getContractFactory('Morc20Token');
+        let Morc20 = await ethers.getContractFactory('MORC20CommonToken');
 
         let initData = await ethers.utils.defaultAbiCoder.encode(
             ["stirng","string","address","address"],
@@ -26,7 +26,7 @@ module.exports = async (taskArgs, hre) => {
 
         let deployData = Morc20.bytecode + initData.substring(2);
 
-        console.log("Morc20Token salt:", taskArgs.salt);
+        console.log("MORC20CommonToken salt:", taskArgs.salt);
 
         let hash = await ethers.utils.keccak256(await ethers.utils.toUtf8Bytes(taskArgs.salt));
 
@@ -38,13 +38,13 @@ module.exports = async (taskArgs, hre) => {
 
         let Morc20Token = await factory.connect(deployer).getAddress(hash)
 
-        console.log("Morc20Token:",Morc20Token);
+        console.log("MORC20CommonToken:",Morc20Token);
 
-        let morc20 = await ethers.getContractAt('Morc20Token',Morc20Token);
+        let morc20 = await ethers.getContractAt('MORC20CommonToken',Morc20Token);
 
         let admin = await morc20.connect(deployer).owner();
 
-        console.log(`Morc20Token contract address is ${Morc20Token} init admin address is ${admin} deploy contract salt is ${hash}`)
+        console.log(`MORC20CommonToken contract address is ${Morc20Token} init admin address is ${admin} deploy contract salt is ${hash}`)
     }
 
 
