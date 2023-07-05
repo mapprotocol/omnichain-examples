@@ -11,9 +11,9 @@ interface IMORC20  is IERC165 {
 
     event InterchainTransfer(bytes32 indexed orderId,address fromAddress,uint256 toChainId,bytes toAddress,uint256 fromAmount,uint256 decimals);
 
-    event ReceiveToken(bytes32 indexed orderId,uint256 fromChain,bytes fromAddress,address receiveAddress,uint256 amount);
-    event ReceiveTokenAndCall(uint256 indexed fromchain,address indexed srcAddress,bytes32 indexed orderId,bytes32 callData);
-    event ReceiveTokenAndCallError(uint256 indexed fromchain,address indexed srcAddress,bytes32 indexed orderId,bytes callData,bytes reason);
+    event ReceiveToken(bytes32 indexed orderId, uint256 fromChain, bytes fromAddress, address receiveAddress, uint256 amount);
+    event ReceiveTokenAndCall(bytes32 indexed orderId, uint256 indexed fromchain, bytes srcAddress, bytes32 callData);
+    event ReceiveTokenAndCallError(bytes32 indexed orderId, uint256 indexed fromchain, bytes srcAddress, bytes callData, bytes reason);
 
 
     function estimateFee(uint256 toChain, address feeToken, uint256 gasLimit) external view returns (uint256 fee);
@@ -29,7 +29,7 @@ interface IMORC20  is IERC165 {
     function token() external view returns (address);
 
 
-    function interchainTransfer(
+    function interTransfer(
         address _fromAddress,
         uint256 _toChainId,
         bytes memory _toAddress,
@@ -37,7 +37,7 @@ interface IMORC20  is IERC165 {
         address _feeToken
     ) external payable;
 
-    function interchainTransferAndCall(
+    function interTransferAndCall(
         address _fromAddress,
         uint256 _toChainId,
         bytes memory _toAddress,
