@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "../extensions/Morc20Pausable.sol";
+import "../extensions/MORC20Pausable.sol";
 
-contract Morc20PausableToken is Morc20Pausable {
+contract MORC20PausableToken is MORC20Pausable {
     constructor(
         string memory _name,
         string memory _symbol,
@@ -11,18 +11,10 @@ contract Morc20PausableToken is Morc20Pausable {
         uint256 _initialSupply,
         address _owner
     )
-    Morc20Pausable(_name, _symbol,_mosAddress)
+    MORC20Pausable(_name, _symbol,_mosAddress)
     {
         _transferOwnership(_owner);
         _mint(_owner,_initialSupply);
-    }
-
-    function _transferOwnership(address _newOwner)
-    internal
-    virtual
-    override
-    {
-        super._transferOwnership(_newOwner);
     }
 
 }
