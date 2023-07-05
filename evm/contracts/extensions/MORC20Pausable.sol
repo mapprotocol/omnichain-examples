@@ -9,13 +9,13 @@ contract MORC20Pausable is MORC20Token,Pausable {
     constructor(string memory _name, string memory _symbol, address _mosAddress) MORC20Token(_name, _symbol,_mosAddress) {
     }
 
-    function _sendCrossChainToken(
+    function _destroyTokenFrom(
         address _fromAddress,
         uint256 _toChainId,
         bytes memory _toAddress,
         uint256 _fromAmount
     ) internal virtual override whenNotPaused returns (uint256 amount,uint256 decimals){
-        return super._sendCrossChainToken(_fromAddress, _toChainId, _toAddress, _fromAmount);
+        return super._destroyTokenFrom(_fromAddress, _toChainId, _toAddress, _fromAmount);
     }
 
     function pauseSendTokens(bool pause) external onlyOwner {

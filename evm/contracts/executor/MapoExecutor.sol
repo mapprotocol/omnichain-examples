@@ -75,8 +75,8 @@ abstract contract MapoExecutor is Ownable, IMapoExecutor {
         if (_feeToken == address(0)){
             return mos.transferOut{value:fee}(_toChain, messageDataBytes, _feeToken);
         }else{
-            SafeERC20.safeApprove(IERC20(_feeToken),address(mos),fee);
-            SafeERC20.safeTransferFrom(IERC20(_feeToken),msg.sender,address(this),fee);
+            SafeERC20.safeApprove(IERC20(_feeToken), address(mos), fee);
+            SafeERC20.safeTransferFrom(IERC20(_feeToken), msg.sender, address(this), fee);
             return mos.transferOut(_toChain, messageDataBytes, _feeToken);
         }
 
@@ -86,9 +86,9 @@ abstract contract MapoExecutor is Ownable, IMapoExecutor {
         require(_gasLimit >= gasLimitMin && _gasLimit <= gasLimitMax,"MapoExecutor: execution gas out of range");
         (uint256 fee,) = mos.getMessageFee(_toChain, _feeToken, _gasLimit);
         require(fee > 0, "MapoExecutor: invalid fee");
-        if(_feeToken == address(0)){
+        if (_feeToken == address(0)) {
             require(msg.value >= fee, "MapoExecutor: insufficient fee" );
-        }else{
+        } else {
             require(IERC20(_feeToken).balanceOf(msg.sender) >= fee, "MapoExecutor: insufficient token");
         }
     }

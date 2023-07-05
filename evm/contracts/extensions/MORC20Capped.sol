@@ -5,7 +5,7 @@ pragma solidity ^0.8.0;
 import "../morc20/MORC20Token.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol";
 
-contract MORC20Cappded is MORC20Token,ERC20Capped {
+contract MORC20Capped is MORC20Token,ERC20Capped {
     constructor(string memory _name, string memory _symbol, uint256 _cappded, address _mosAddress) MORC20Token(_name, _symbol, _mosAddress) ERC20Capped(_cappded) {
 
     }

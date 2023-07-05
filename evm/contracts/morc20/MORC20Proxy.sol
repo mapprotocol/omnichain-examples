@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "./MORC20Core.sol";
 
@@ -8,31 +9,27 @@ import "./MORC20Core.sol";
 contract MORC20Proxy is MORC20Core {
     using SafeERC20 for IERC20;
 
-    IERC20 internal immutable interchainToken;
-    uint256 public anchoringDecimals;
+    IERC20 internal immutable _underlying;
+    uint256 public tokenDecimals;
 
-    // total amount is transferred from this chain to other chains, ensuring the total is less than uint64.max in sd
-    uint public outboundAmount;
+    // total amount transferred to other chains
+    uint256 public outAmount;
 
     constructor(address _token, address _mosAddress) MORC20Core( _mosAddress) {
-        interchainToken = IERC20(_token);
+        _underlying = IERC20(_token);
 
-        (bool success, bytes memory data) = _token.staticcall(
-            abi.encodeWithSignature("decimals()")
-        );
-        require(success, "MORC20Proxy: failed to get token decimals");
-        anchoringDecimals =uint256(abi.decode(data, (uint8)));
+        tokenDecimals = uint256(IERC20Metadata(_token).decimals());
     }
 
     function currentChainSupply() public view virtual override returns (uint) {
-        return interchainToken.totalSupply() - outboundAmount;
+        return _underlying.totalSupply() - outAmount;
     }
 
     function token() public view virtual override returns (address) {
-        return address(interchainToken);
+        return address(_underlying);
     }
 
-    function _sendCrossChainToken(
+    function _destroyTokenFrom(
         address _fromAddress,
         uint256 ,
         bytes memory,
@@ -43,37 +40,38 @@ contract MORC20Proxy is MORC20Core {
         _fromAmount = _transferFrom(_fromAddress, address(this), _fromAmount);
 
         // check total outbound amount
-        outboundAmount += _fromAmount;
+        outAmount += _fromAmount;
 
-        return (amount, anchoringDecimals);
+        return (amount, tokenDecimals);
     }
 
-    function _receiveCrossChainToken(
-        address _receiveAddress,
+    function _createTokenTo(
+        address _receiverAddress,
         uint256 ,
-        uint256 _amount,
-        uint256 _decimals
+        uint256 _fromAmount,
+        uint256 _fromDecimals
     ) internal virtual override returns (uint256 amount,uint256 decimals) {
-        amount = _amount * 10 ** anchoringDecimals / 10 ** _decimals;
+        amount = _fromAmount * 10 ** tokenDecimals / 10 ** _fromDecimals;
 
-        outboundAmount -= amount;
+        outAmount -= amount;
 
         // tokens are already in this contract, so no need to transfer
-        if (_receiveAddress == address(this)) {
-            return (amount,anchoringDecimals);
+        if (_receiverAddress != address(this)) {
+            _transferFrom(address(this), _receiverAddress, amount);
         }
 
-        return (_transferFrom(address(this), _receiveAddress, amount),anchoringDecimals);
+        return (amount, tokenDecimals);
     }
 
     function _transferFrom(address _from, address _to, uint _amount) internal virtual override returns (uint) {
-        uint before = interchainToken.balanceOf(_to);
+        uint before = _underlying.balanceOf(_to);
         if (_from == address(this)) {
-            interchainToken.safeTransfer(_to, _amount);
+            _underlying.safeTransfer(_to, _amount);
         } else {
-            interchainToken.safeTransferFrom(_from, _to, _amount);
+            _underlying.safeTransferFrom(_from, _to, _amount);
         }
-        return interchainToken.balanceOf(_to) - before;
+
+        return _underlying.balanceOf(_to) - before;
     }
 
 

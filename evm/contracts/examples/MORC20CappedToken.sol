@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "../extensions/MORC20Cappded.sol";
+import "../extensions/MORC20Capped.sol";
 
-contract MORC20CappdedToken is MORC20Cappded {
+contract MORC20CappedToken is MORC20Capped {
 
     constructor(
         string memory _name,
@@ -12,7 +12,7 @@ contract MORC20CappdedToken is MORC20Cappded {
         uint256 _initialSupply,
         address _owner
     )
-    MORC20Cappded(_name, _symbol,_initialSupply,_mosAddress)
+    MORC20Capped(_name, _symbol, _initialSupply, _mosAddress)
     {
         _transferOwnership(_owner);
         _mint(_owner,_initialSupply);
