@@ -9,14 +9,14 @@ import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
  */
 interface IMORC20  is IERC165 {
 
-    event InterchainTransfer(bytes32 indexed orderId,address fromAddress,uint256 toChainId,bytes toAddress,uint256 fromAmount,uint256 decimals);
+    event InterTransfer(bytes32 indexed orderId, address indexed fromAddress, uint256 indexed toChainId, bytes toAddress, uint256 fromAmount, uint256 decimals);
 
-    event ReceiveToken(bytes32 indexed orderId, uint256 fromChain, bytes fromAddress, address receiveAddress, uint256 amount);
-    event ReceiveTokenAndCall(bytes32 indexed orderId, uint256 indexed fromchain, bytes srcAddress, bytes32 callData);
-    event ReceiveTokenAndCallError(bytes32 indexed orderId, uint256 indexed fromchain, bytes srcAddress, bytes callData, bytes reason);
+    event InterReceive(bytes32 indexed orderId, uint256 indexed fromChain, bytes fromAddress, address toAddress, uint256 amount);
+    event InterReceiveAndExecute(bytes32 indexed orderId, uint256 indexed fromchain, bytes srcAddress, bytes32 callData);
+    event InterReceiveAndExecuteError(bytes32 indexed orderId, uint256 indexed fromchain, bytes srcAddress, bytes callData, bytes reason);
 
 
-    function estimateFee(uint256 toChain, address feeToken, uint256 gasLimit) external view returns (uint256 fee);
+    function estimateFee(uint256 toChain, uint256 gasLimit) external view returns (address feeToken, uint256 fee);
 
     /**
      * @dev returns the circulating amount of tokens on current chain
@@ -34,7 +34,7 @@ interface IMORC20  is IERC165 {
         uint256 _toChainId,
         bytes memory _toAddress,
         uint256 _fromAmount,
-        address _feeToken
+        uint256 _gasLimit
     ) external payable;
 
     function interTransferAndCall(
@@ -42,8 +42,8 @@ interface IMORC20  is IERC165 {
         uint256 _toChainId,
         bytes memory _toAddress,
         uint256 _fromAmount,
-        address _feeToken,
         uint256 _gasLimit,
+        bytes memory _refundAddress,
         bytes memory _messageData
     ) external payable;
 
