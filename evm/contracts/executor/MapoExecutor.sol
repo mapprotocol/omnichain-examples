@@ -20,6 +20,7 @@ abstract contract MapoExecutor is Ownable, IMapoExecutor {
 
     event SetTrustedAddress(uint256 toChainId, bytes toAddress);
     event SetFeeToken(address _feeToken);
+    event SetMosAddress(address _mos);
 
     constructor(address _mosAddress) {
         require(_mosAddress != address(0), "MapoExecutor: invalid mos address");
@@ -98,8 +99,14 @@ abstract contract MapoExecutor is Ownable, IMapoExecutor {
 
 
     function setFeeToken(address _feeToken) external onlyOwner {
-        // TODO: check fee token address
         feeToken = _feeToken;
         emit SetFeeToken(_feeToken);
     }
+
+    function setMosAddress(address _mos) external onlyOwner {
+        require(_mos != address(0),"MapoExecutor: mos address cannot be a address(0)");
+        mos = IMOSV3(_mos);
+        emit SetMosAddress(_mos);
+    }
+
 }
