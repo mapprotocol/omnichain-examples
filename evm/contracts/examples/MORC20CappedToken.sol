@@ -10,9 +10,10 @@ contract MORC20CappedToken is MORC20Capped {
         string memory _symbol,
         address _mosAddress,
         uint256 _initialSupply,
+        uint256 _capped,
         address _owner
     )
-    MORC20Capped(_name, _symbol, _initialSupply, _mosAddress)
+    MORC20Capped(_name, _symbol, _capped, _mosAddress)
     {
         _transferOwnership(_owner);
         _mint(_owner,_initialSupply);

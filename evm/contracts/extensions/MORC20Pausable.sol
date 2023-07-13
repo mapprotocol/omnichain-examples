@@ -9,13 +9,26 @@ contract MORC20Pausable is MORC20Token,Pausable {
     constructor(string memory _name, string memory _symbol, address _mosAddress) MORC20Token(_name, _symbol,_mosAddress) {
     }
 
-    function _destroyTokenFrom(
+    function interTransfer(
         address _fromAddress,
         uint256 _toChainId,
         bytes memory _toAddress,
-        uint256 _fromAmount
-    ) internal virtual override whenNotPaused returns (uint256 amount,uint256 decimals){
-        return super._destroyTokenFrom(_fromAddress, _toChainId, _toAddress, _fromAmount);
+        uint256 _fromAmount,
+        uint256 _gasLimit
+    ) external payable virtual override whenNotPaused {
+        return _interTransfer(_fromAddress, _toChainId, _toAddress, _fromAmount, _gasLimit);
+    }
+
+    function interTransferAndCall(
+        address _fromAddress,
+        uint256 _toChainId,
+        bytes memory _toAddress,
+        uint256 _fromAmount,
+        uint256 _gasLimit,
+        bytes memory _refundAddress,
+        bytes memory _messageData
+    ) external payable virtual override whenNotPaused {
+        _interTransferAndCall(_fromAddress, _toChainId, _toAddress, _fromAmount, _gasLimit,_refundAddress, _messageData);
     }
 
     function pauseSendTokens(bool pause) external onlyOwner {

@@ -15,18 +15,5 @@ contract MORC20CommonToken is MORC20Token {
         _transferOwnership(_owner);
     }
 
-    function mint(address _receiveAddress,uint256 _amount) public virtual onlyOwner{
-        _mint(_receiveAddress,_amount);
-    }
-
-    function burn(uint256 amount) public virtual {
-        _burn(_msgSender(), amount);
-    }
-
-    function burnFrom(address account, uint256 amount) public virtual {
-        _spendAllowance(account, _msgSender(), amount);
-        _burn(account, amount);
-    }
-
 
 }

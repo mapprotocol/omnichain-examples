@@ -1,7 +1,12 @@
 {
-  "name": "MAPProtocolOmnichainExamples",
+  "name": "@mapprotocol/omnichain-examples",
   "version": "1.0.0",
-  "description": "",
+  "description": "MAP Protocol omnichain examples based on MOS message.",
+  "files": [
+    "artifacts/contracts/**/*.sol/*.json",
+    "!artifacts/contracts/**/*.sol/*.dbg.json",
+    "contracts"
+  ],
   "main": "index.js",
   "scripts": {},
   "repository": {
@@ -15,9 +20,8 @@
   },
   "homepage": "https://github.com/mapprotocol/omnichain-examples#readme.md",
   "dependencies": {
-    "@nomicfoundation/hardhat-network-helpers": "^1.0.8",
-    "@nomiclabs/hardhat-etherscan": "^2.1.8",
-    "@nomiclabs/hardhat-waffle": "^2.0.3",
+    "@mapprotocol/mos": "^0.3.0",
+    "@openzeppelin/contracts": "^4.9.1",
     "ajv": "^8.8.2",
     "bignumber.js": "^9.0.1",
     "keythereum": "^1.2.0",
@@ -28,14 +32,14 @@
     "stdio": "^2.1.1"
   },
   "devDependencies": {
-    "@mapprotocol/mos": "^0.3.0",
+    "@nomicfoundation/hardhat-network-helpers": "^1.0.8",
+    "@nomiclabs/hardhat-etherscan": "^2.1.8",
+    "@nomiclabs/hardhat-waffle": "^2.0.3",
     "@nomiclabs/hardhat-ethers": "npm:hardhat-deploy-ethers@^0.3.0-beta.13",
     "@nomiclabs/hardhat-solhint": "^2.0.0",
-    "@openzeppelin/contracts": "^4.9.1",
     "@types/chai": "^4.2.15",
     "@types/mocha": "^8.2.1",
     "@types/node": "^14.14.31",
-    "@uniswap/v2-core": "^1.0.1",
     "chai": "^4.3.4",
     "chai-as-promised": "^7.1.1",
     "concurrently": "^6.0.0",
