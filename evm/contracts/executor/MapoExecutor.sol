@@ -92,11 +92,13 @@ abstract contract MapoExecutor is Ownable, IMapoExecutor {
     }
 
 
-    function setTrustedAddress(uint256 _toChainId,bytes memory _toAddress) external onlyOwner {
-        trustedList[_toChainId] = _toAddress;
-        emit SetTrustedAddress(_toChainId, _toAddress);
+    function setTrustedAddress(uint256[] calldata _toChainIds, bytes[] calldata _toAddresses) external onlyOwner {
+        require(_toChainIds.length == _toAddresses.length,"MapoExecutor: address or chainId not match");
+        for(uint256 i = 0; i < _toChainIds.length; i++){
+            trustedList[_toChainIds[i]] = _toAddresses[i];
+            emit SetTrustedAddress(_toChainIds[i], _toAddresses[i]);
+        }
     }
-
 
     function setFeeToken(address _feeToken) external onlyOwner {
         feeToken = _feeToken;
