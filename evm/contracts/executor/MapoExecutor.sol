@@ -18,7 +18,7 @@ abstract contract MapoExecutor is Ownable, IMapoExecutor {
     address public feeToken;
     mapping(uint256 => bytes) public trustedList;
 
-    event SetTrustedAddress(uint256[] toChainId, bytes[] toAddress);
+    event SetTrustedAddress(uint256 toChainId, bytes toAddress);
     event SetFeeToken(address _feeToken);
     event SetMosAddress(address _mos);
 
@@ -96,8 +96,8 @@ abstract contract MapoExecutor is Ownable, IMapoExecutor {
         require(_toChainIds.length == _toAddresses.length,"MapoExecutor: address or chainId not match");
         for(uint256 i = 0; i < _toChainIds.length; i++){
             trustedList[_toChainIds[i]] = _toAddresses[i];
+            emit SetTrustedAddress(_toChainIds[i], _toAddresses[i]);
         }
-        emit SetTrustedAddress(_toChainIds, _toAddresses);
     }
 
     function setFeeToken(address _feeToken) external onlyOwner {
