@@ -15,8 +15,8 @@ abstract contract MORC20Core is MapoExecutor, ERC165, IMORC20 {
     using SafeERC20 for IERC20;
     using Address for address;
 
-    uint256 public constant INTERCHAIN_TRANSFER = 0;
-    uint256 public constant INTERCHAIN_TRANSFER_AND_CALL = 1;
+    bytes32 public constant INTERCHAIN_TRANSFER = keccak256("InterTransfer(bytes32,bytes)");
+    bytes32 public constant INTERCHAIN_TRANSFER_AND_CALL = keccak256("InterTransferAndCall(bytes32,bytes)");
     bytes public constant  NOT_CONTRACT_ADDRESS = "0x4e4f545f434f4e54524143545f41444452455353";
 
     mapping(bytes32 => bool) public orderList;
@@ -186,7 +186,7 @@ abstract contract MORC20Core is MapoExecutor, ERC165, IMORC20 {
     ) internal virtual override returns(bytes memory) {
         require(!orderList[_orderId], "MORC20Core: invalid orderId");
 
-        (uint256 interType, bytes memory payload) = abi.decode(_message, (uint256,bytes));
+        (bytes32 interType, bytes memory payload) = abi.decode(_message, (bytes32,bytes));
 
         if (interType == INTERCHAIN_TRANSFER) {
             _interReceive(_fromChain, _orderId, payload);

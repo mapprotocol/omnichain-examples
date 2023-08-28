@@ -8,11 +8,13 @@ contract MORC20CommonToken is MORC20Token {
         string memory _name,
         string memory _symbol,
         address _mosAddress,
+        uint256 _initialSupply,
         address _owner
     )
     MORC20Token(_name, _symbol,_mosAddress)
     {
         _transferOwnership(_owner);
+        _mint(_owner,_initialSupply);
     }
 
 
