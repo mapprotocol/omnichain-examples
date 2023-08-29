@@ -11,8 +11,9 @@ contract OAppSourceSender is Ownable {
 
     uint256 public cumulativeResult;
 
-    uint256 public constant CROSS_CHIAN_MESSAGE = 0;
-    uint256 public constant CROSS_CHIAN_CALL = 1;
+    bytes32 public constant CROSS_CHIAN_MESSAGE = keccak256("Message(bytes32,bytes)");
+
+    receive() external payable {}
 
     constructor(address _mos){
         mos = IMOSV3(_mos);
@@ -23,47 +24,103 @@ contract OAppSourceSender is Ownable {
         cumulativeResult += _number;
     }
 
-    function _getMessageData(
+    function _getCalldataMessageData(
         uint256 _number,
-        bytes memory _target,
-        uint256 _type
+        bytes memory _target
     )
     internal
     pure
     returns(bytes memory)
     {
-        bytes memory messageByte;
 
-        if(_type == CROSS_CHIAN_MESSAGE){
-            bytes memory payload = abi.encode(_number);
-            IMOSV3.MessageData memory messageData = IMOSV3.MessageData(false,IMOSV3.MessageType.MESSAGE,_target,payload,500000,0);
-            messageByte =  abi.encode(messageData);
-        }else if(_type == CROSS_CHIAN_CALL){
-            bytes memory payload = abi.encodeWithSelector(OAppSourceSender.crossChainAdd.selector,_number);
-            IMOSV3.MessageData memory messageData = IMOSV3.MessageData(false,IMOSV3.MessageType.CALLDATA,_target,payload,500000,0);
-            messageByte =  abi.encode(messageData);
-        }
-         return messageByte;
+        bytes memory payload = abi.encodeWithSelector(OAppSourceSender.crossChainAdd.selector,_number);
+
+        IMOSV3.MessageData memory messageData =
+            IMOSV3.MessageData(false,IMOSV3.MessageType.CALLDATA,_target,payload,500000,0);
+
+        return abi.encode(messageData);
     }
 
-    function _getTransferOutFee(uint256 _toChainId) internal view returns(uint256){
+    function _getMessageMessageData(
+        uint256 _number,
+        bytes memory _target
+    )
+    internal
+    pure
+    returns(bytes memory)
+    {
+
+        bytes memory prePayload = abi.encode(_number);
+        bytes memory payload = abi.encode(CROSS_CHIAN_MESSAGE,prePayload);
+
+        IMOSV3.MessageData memory messageData =
+            IMOSV3.MessageData(false,IMOSV3.MessageType.MESSAGE,_target,payload,500000,0);
+
+        return abi.encode(messageData);
+    }
+
+    function getTransferOutFee(uint256 _toChainId) public view returns(uint256){
         (uint256 amount,) = mos.getMessageFee(_toChainId,address(0),500000);
         return amount;
     }
 
-    function sendCrossChainAdd(
+
+
+    function sendCalldataCrossChain(
+        uint256 _toChainId,
+        uint256 _number,
+        bytes memory _target
+    )
+    external
+    payable
+    returns(bytes32)
+    {
+
+        bytes memory messageData = _getCalldataMessageData(_number,_target);
+
+        uint256 fee = getTransferOutFee(_toChainId);
+
+        bytes32 orderId = mos.transferOut{value:fee}(_toChainId, messageData, address(0));
+
+        return orderId;
+    }
+
+    function sendMessageCrossChain(
+        uint256 _toChainId,
+        uint256 _number,
+        bytes memory _target
+    )
+    external
+    payable
+    returns(bytes32)
+    {
+
+        bytes memory messageData = _getMessageMessageData(_number,_target);
+
+        uint256 fee = getTransferOutFee(_toChainId);
+
+        bytes32 orderId = mos.transferOut{value:fee}(_toChainId, messageData, address(0));
+
+        return orderId;
+    }
+
+    function sendCrossChain(
         uint256 _toChainId,
         uint256 _number,
         bytes memory _target,
-        uint256 _type
+        uint256 _tag
     )
     external
     returns(bytes32)
     {
+        bytes memory messageData;
+        if(_tag == 1){
+             messageData = _getMessageMessageData(_number,_target);
+        }else{
+            messageData = _getCalldataMessageData(_number,_target);
+        }
 
-        bytes memory messageData = _getMessageData(_number,_target,_type);
-
-        uint256 fee = _getTransferOutFee(_toChainId);
+        uint256 fee = getTransferOutFee(_toChainId);
 
         bytes32 orderId = mos.transferOut{value:fee}(_toChainId, messageData, address(0));
 

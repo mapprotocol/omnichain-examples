@@ -8,7 +8,7 @@ module.exports = async (taskArgs,hre) => {
 
     await deploy('OmniDictionary', {
         from: deployer.address,
-        args: [],
+        args: [deployer.address],
         log: true,
         contract: 'OmniDictionary'
     })

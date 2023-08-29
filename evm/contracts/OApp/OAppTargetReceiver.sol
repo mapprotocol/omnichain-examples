@@ -30,7 +30,8 @@ contract OAppTargetReceiver is Ownable, IMapoExecutor{
        bytes calldata _message
    ) external returns(bytes memory newMessage){
         require(!orderList[_orderId],"The orderId is invalid");
-        uint256 number = abi.decode(_message,(uint256));
+        (bytes32 typeTag,bytes memory payload) = abi.decode(_message,(bytes32,bytes));
+        uint256 number = abi.decode(payload,(uint256));
         cumulativeResult += number;
         orderList[_orderId] = true;
         return _message;

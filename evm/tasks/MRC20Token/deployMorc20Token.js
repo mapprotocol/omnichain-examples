@@ -8,7 +8,7 @@ module.exports = async (taskArgs, hre) => {
     if (taskArgs.salt === ""){
         await deploy('MORC20CommonToken', {
             from: deployer.address,
-            args: [taskArgs.name,taskArgs.symbol,taskArgs.mos,deployer.address],
+            args: [taskArgs.name,taskArgs.symbol,taskArgs.mos,taskArgs.supply,deployer.address],
             log: true,
             contract: 'MORC20CommonToken',
         })
@@ -20,7 +20,7 @@ module.exports = async (taskArgs, hre) => {
         let Morc20 = await ethers.getContractFactory('MORC20CommonToken');
 
         let initData = await ethers.utils.defaultAbiCoder.encode(
-            ["stirng","string","address","address"],
+            ["stirng","string","address","uint256","address"],
             [taskArgs.name,taskArgs.symbol,taskArgs.mos,deployer.address]
         )
 
