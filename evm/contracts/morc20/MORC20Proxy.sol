@@ -5,7 +5,6 @@ import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "./MORC20Core.sol";
 
-
 contract MORC20Proxy is MORC20Core {
     using SafeERC20 for IERC20;
 
@@ -15,7 +14,7 @@ contract MORC20Proxy is MORC20Core {
     // total amount transferred to other chains
     uint256 public outAmount;
 
-    constructor(address _token, address _mosAddress) MORC20Core( _mosAddress) {
+    constructor(address _token, address _mosAddress) MORC20Core(_mosAddress) {
         _underlying = IERC20(_token);
 
         tokenDecimals = uint256(IERC20Metadata(_token).decimals());
@@ -31,10 +30,10 @@ contract MORC20Proxy is MORC20Core {
 
     function _destroyTokenFrom(
         address _fromAddress,
-        uint256 ,
+        uint256,
         bytes memory,
         uint256 _fromAmount
-    ) internal virtual override returns (uint256 amount,uint256 decimals) {
+    ) internal virtual override returns (uint256 amount, uint256 decimals) {
         require(_fromAddress == _msgSender(), "MORC20Proxy: owner is not send caller");
 
         _fromAmount = _transferFrom(_fromAddress, address(this), _fromAmount);
@@ -47,11 +46,11 @@ contract MORC20Proxy is MORC20Core {
 
     function _createTokenTo(
         address _receiverAddress,
-        uint256 ,
+        uint256,
         uint256 _fromAmount,
         uint256 _fromDecimals
-    ) internal virtual override returns (uint256 amount,uint256 decimals) {
-        amount = _fromAmount * 10 ** tokenDecimals / 10 ** _fromDecimals;
+    ) internal virtual override returns (uint256 amount, uint256 decimals) {
+        amount = (_fromAmount * 10 ** tokenDecimals) / 10 ** _fromDecimals;
 
         outAmount -= amount;
 
@@ -73,6 +72,4 @@ contract MORC20Proxy is MORC20Core {
 
         return _underlying.balanceOf(_to) - before;
     }
-
-
 }

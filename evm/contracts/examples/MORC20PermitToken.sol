@@ -11,13 +11,8 @@ contract MORC20PermitToken is MORC20Token, ERC20Permit {
         address _mosAddress,
         uint256 _initialSupply,
         address _owner
-    )
-    MORC20Token(_name, _symbol,_mosAddress)
-    ERC20Permit(_name)
-    {
+    ) MORC20Token(_name, _symbol, _mosAddress) ERC20Permit(_name) {
         _transferOwnership(_owner);
-        _mint(_owner,_initialSupply);
-
+        _mint(_owner, _initialSupply);
     }
-
 }

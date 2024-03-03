@@ -10,11 +10,8 @@ contract MORC20PausableToken is MORC20Pausable {
         address _mosAddress,
         uint256 _initialSupply,
         address _owner
-    )
-    MORC20Pausable(_name, _symbol,_mosAddress)
-    {
+    ) MORC20Pausable(_name, _symbol, _mosAddress) {
         _transferOwnership(_owner);
-        _mint(_owner,_initialSupply);
+        _mint(_owner, _initialSupply);
     }
-
 }

@@ -8,7 +8,9 @@
     "contracts"
   ],
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "format": "prettier --print-width 120 --tab-width 4 --write ./contracts ./deploy ./tasks ./test"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/mapprotocol/omnichain-examples.git"
@@ -20,7 +22,7 @@
   },
   "homepage": "https://github.com/mapprotocol/omnichain-examples#readme.md",
   "dependencies": {
-    "@mapprotocol/mos": "^0.3.0",
+    "@mapprotocol/mos": "^0.4.0",
     "@openzeppelin/contracts": "^4.9.1",
     "ajv": "^8.8.2",
     "bignumber.js": "^9.0.1",
@@ -53,8 +55,8 @@
     "hardhat-deploy-ethers": "^0.3.0-beta.7",
     "hardhat-gas-reporter": "^1.0.4",
     "hardhat-spdx-license-identifier": "^2.0.3",
-    "prettier": "^2.2.1",
-    "prettier-plugin-solidity": "^1.0.0-beta.5",
+    "prettier": "^2.8.8",
+    "prettier-plugin-solidity": "^1.1.0",
     "solidity-coverage": "^0.7.22",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.2",
