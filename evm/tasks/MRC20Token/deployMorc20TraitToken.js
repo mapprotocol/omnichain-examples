@@ -5,6 +5,8 @@ module.exports = async (taskArgs, hre) => {
 
     console.log("deployer address:", deployer.address);
 
+    console.log("deploy token type:", taskArgs.token);
+
     if (taskArgs.salt === "") {
         await deploy(taskArgs.token, {
             from: deployer.address,
@@ -17,6 +19,9 @@ module.exports = async (taskArgs, hre) => {
 
         console.log(`${taskArgs.token} deploy address : ${morc20Token.address}`);
     } else {
+        console.log("salt:", taskArgs.salt);
+        console.log("factory address:", taskArgs.factory);
+
         let Morc20 = await ethers.getContractFactory(taskArgs.token);
 
         let initData = await ethers.utils.defaultAbiCoder.encode(

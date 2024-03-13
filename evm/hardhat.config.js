@@ -39,7 +39,7 @@ module.exports = {
       timeout: 2000000,
       chainId:97
     },
-    Map: {
+    Mapo: {
       url: `https://rpc.maplabs.io/`,
       chainId : 22776,
       accounts: accounts
@@ -89,26 +89,23 @@ module.exports = {
       url: `https://klaytn-baobab.blockpi.network/v1/rpc/public`,
       chainId : 1001,
       accounts: accounts
-    }
+    },
+    ArbitrumSepolia: {
+      chainId: 421614,
+      url: `https://arbitrum-sepolia.blockpi.network/v1/rpc/public`,
+      accounts: accounts
+    },
   },
   solidity: {
     compilers: [
       {
-        version: '0.8.7',
+        version: '0.8.20',
         settings: {
           optimizer: {
             enabled: true,
             runs: 200
-          }
-        }
-      },
-      {
-        version: '0.8.12',
-        settings: {
-          optimizer: {
-            enabled: true,
-            runs: 200
-          }
+          },
+          "evmVersion": "london"
         }
       },
     ]
