@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@mapprotocol/mos/contracts/interface/IMOSV3.sol";
 import "@mapprotocol/mos/contracts/interface/IMapoExecutor.sol";
+import "../lib/Helper.sol";
 
 abstract contract MapoExecutor is Ownable, IMapoExecutor {
     uint256 public constant MESSAGE_TYPE_MESSAGE = 0;
@@ -19,8 +20,8 @@ abstract contract MapoExecutor is Ownable, IMapoExecutor {
     mapping(uint256 => bytes) public trustedList;
 
     event SetTrustedAddress(uint256 toChainId, bytes toAddress);
-    event SetFeeToken(address _feeToken);
-    event SetMosAddress(address _mos);
+    event SetFeeToken(address feeToken);
+    event SetMosAddress(address mos);
 
     constructor(address _mosAddress) {
         require(_mosAddress != address(0), "MapoExecutor: invalid mos address");
@@ -74,14 +75,16 @@ abstract contract MapoExecutor is Ownable, IMapoExecutor {
             require(false, "MapoExecutor: invalid message type");
         }
 
-        (uint256 fee, ) = mos.getMessageFee(_toChain, feeToken, _gasLimit);
-
-        if (feeToken == address(0)) {
-            return mos.transferOut{value: fee}(_toChain, messageDataBytes, feeToken);
+        (address token, uint256 fee) = _getMessageFee(_toChain, _gasLimit);
+        require(fee > 0, "MapoExecutor: invalid fee value");
+        if (token == address(0)) {
+            require(msg.value >= fee, "MapoExecutor: invalid fee");
         } else {
-            SafeERC20.safeApprove(IERC20(feeToken), address(mos), fee);
-            return mos.transferOut(_toChain, messageDataBytes, feeToken);
+            SafeERC20.safeTransferFrom(IERC20(token), msg.sender, address(this), fee);
+            SafeERC20.safeApprove(IERC20(token), address(mos), fee);
         }
+
+        return mos.transferOut{value: msg.value}(_toChain, messageDataBytes, token);
     }
 
     function _getMessageFee(uint256 _toChain, uint256 _gasLimit) internal view returns (address token, uint256 amount) {
@@ -111,5 +114,9 @@ abstract contract MapoExecutor is Ownable, IMapoExecutor {
         require(_mos != address(0), "MapoExecutor: mos address cannot be a address(0)");
         mos = IMOSV3(_mos);
         emit SetMosAddress(_mos);
+    }
+
+    function rescueFunds(address _token, uint256 _amount) external onlyOwner {
+        Helper._transfer(_token, msg.sender, _amount);
     }
 }

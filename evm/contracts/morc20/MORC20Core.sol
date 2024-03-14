@@ -32,7 +32,7 @@ abstract contract MORC20Core is MapoExecutor, ERC165, IMORC20 {
         uint256 _toChain,
         uint256 _gasLimit
     ) external view virtual override returns (address feeToken, uint256 fee) {
-        return _estimateFee(_toChain, _gasLimit);
+        return _getMessageFee(_toChain, _gasLimit);
     }
 
     function interTransfer(
@@ -65,18 +65,6 @@ abstract contract MORC20Core is MapoExecutor, ERC165, IMORC20 {
         );
     }
 
-    function _collectFee(uint256 _toChainId, uint256 _gasLimit) internal virtual {
-        (address feeToken, uint256 fee) = _estimateFee(_toChainId, _gasLimit);
-
-        require(fee > 0, "MORC20Core: invalid fee value");
-
-        if (Helper._isNative(feeToken)) {
-            require(msg.value == fee, "MORC20Core: invalid fee");
-        } else {
-            SafeERC20.safeTransferFrom(IERC20(feeToken), msg.sender, address(this), fee);
-        }
-    }
-
     function _interTransfer(
         address _fromAddress,
         uint256 _toChainId,
@@ -84,7 +72,6 @@ abstract contract MORC20Core is MapoExecutor, ERC165, IMORC20 {
         uint256 _fromAmount,
         uint256 _gasLimit
     ) internal virtual {
-        _collectFee(_toChainId, _gasLimit);
         (uint256 amount, uint256 decimals) = _destroyTokenFrom(_fromAddress, _toChainId, _toAddress, _fromAmount);
 
         require(amount > 0, "MORC20Core: amount too small");
@@ -107,8 +94,6 @@ abstract contract MORC20Core is MapoExecutor, ERC165, IMORC20 {
         bytes memory _refundAddress,
         bytes memory _messageData
     ) internal virtual {
-        _collectFee(_toChainId, _gasLimit);
-
         (uint256 amount, uint256 decimals) = _destroyTokenFrom(_fromAddress, _toChainId, _toAddress, _fromAmount); // amount returned should not have dust
         require(amount > 0, "MORC20Core: amount too small");
 
@@ -147,6 +132,7 @@ abstract contract MORC20Core is MapoExecutor, ERC165, IMORC20 {
         emit InterReceive(_orderId, _fromChainId, _fromAddress, _receiverAddress, amount);
 
         // call
+        // todo: check the gas for call
         bool success = IMORC20Receiver(_receiverAddress).onMORC20Received{gas: gasleft()}(
             _fromChainId,
             _fromAddress,
@@ -224,13 +210,6 @@ abstract contract MORC20Core is MapoExecutor, ERC165, IMORC20 {
         orderList[_orderId] = true;
 
         return payload;
-    }
-
-    function _estimateFee(
-        uint256 _toChain,
-        uint256 _gasLimit
-    ) internal view virtual returns (address feeToken, uint256 fee) {
-        return _getMessageFee(_toChain, _gasLimit);
     }
 
     // burn or lock omnichain token
