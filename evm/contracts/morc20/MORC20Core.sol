@@ -20,8 +20,6 @@ abstract contract MORC20Core is MapoExecutor, ERC165, IMORC20 {
 
     mapping(bytes32 => bool) public orderList;
 
-    event NonContractAddress(address receiveAddress);
-
     constructor(address _mosAddress) MapoExecutor(_mosAddress) {}
 
     function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165, IERC165) returns (bool) {

@@ -10,7 +10,7 @@ import "../lib/Helper.sol";
 
 abstract contract MapoExecutor is Ownable, IMapoExecutor {
     uint256 public constant MESSAGE_TYPE_MESSAGE = 0;
-    uint256 public constant MESSAGE_TYPE_CALLDATE = 1;
+    uint256 public constant MESSAGE_TYPE_CALL_DATA = 1;
 
     uint256 public constant gasLimitMin = 21000;
     uint256 public constant gasLimitMax = 10000000;
@@ -19,9 +19,9 @@ abstract contract MapoExecutor is Ownable, IMapoExecutor {
     address public feeToken;
     mapping(uint256 => bytes) public trustedList;
 
-    event SetTrustedAddress(uint256 toChainId, bytes toAddress);
-    event SetFeeToken(address feeToken);
-    event SetMosAddress(address mos);
+    event SetTrustedAddress(uint256 indexed toChainId, bytes toAddress);
+    event SetFeeToken(address indexed feeToken);
+    event SetMosAddress(address indexed mos);
 
     constructor(address _mosAddress) {
         require(_mosAddress != address(0), "MapoExecutor: invalid mos address");
@@ -69,7 +69,7 @@ abstract contract MapoExecutor is Ownable, IMapoExecutor {
         bytes memory messageDataBytes;
         if (_toType == MESSAGE_TYPE_MESSAGE) {
             messageDataBytes = abi.encode(false, IMOSV3.MessageType.MESSAGE, tempFromAddress, _payload, _gasLimit, 0);
-        } else if (_toType == MESSAGE_TYPE_CALLDATE) {
+        } else if (_toType == MESSAGE_TYPE_CALL_DATA) {
             messageDataBytes = abi.encode(false, IMOSV3.MessageType.CALLDATA, tempFromAddress, _payload, _gasLimit, 0);
         } else {
             require(false, "MapoExecutor: invalid message type");
@@ -93,25 +93,26 @@ abstract contract MapoExecutor is Ownable, IMapoExecutor {
         return (feeToken, fee);
     }
 
-    function getTrustedAddress(uint256 _toChainId) external view returns (bytes memory) {
-        return trustedList[_toChainId];
+    function getTrustedAddress(uint256 _remoteChainId) external view returns (bytes memory) {
+        return trustedList[_remoteChainId];
     }
 
-    function setTrustedAddress(uint256[] calldata _toChainIds, bytes[] calldata _toAddresses) external onlyOwner {
-        require(_toChainIds.length == _toAddresses.length, "MapoExecutor: address or chainId not match");
-        for (uint256 i = 0; i < _toChainIds.length; i++) {
-            trustedList[_toChainIds[i]] = _toAddresses[i];
-            emit SetTrustedAddress(_toChainIds[i], _toAddresses[i]);
+    function setTrustedAddress(uint256[] calldata _remoteChainIds, bytes[] calldata _remoteAddresses) external onlyOwner {
+        require(_remoteChainIds.length == _remoteAddresses.length, "MapoExecutor: address or chainId not match");
+        for (uint256 i = 0; i < _remoteChainIds.length; i++) {
+            trustedList[_remoteChainIds[i]] = _remoteAddresses[i];
+            emit SetTrustedAddress(_remoteChainIds[i], _remoteAddresses[i]);
         }
     }
 
     function setFeeToken(address _feeToken) external onlyOwner {
+        require(_feeToken != address(0), "MapoExecutor: invalid fee token");
         feeToken = _feeToken;
         emit SetFeeToken(_feeToken);
     }
 
     function setMosAddress(address _mos) external onlyOwner {
-        require(_mos != address(0), "MapoExecutor: mos address cannot be a address(0)");
+        require(_mos != address(0), "MapoExecutor: invalid mos address");
         mos = IMOSV3(_mos);
         emit SetMosAddress(_mos);
     }
