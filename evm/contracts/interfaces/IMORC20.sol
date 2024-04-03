@@ -16,6 +16,15 @@ interface IMORC20 is IERC165 {
         uint256 fromAmount
     );
 
+    event InterTransferAndCall(
+        bytes32 indexed orderId,
+        address indexed fromAddress,
+        uint256 indexed toChainId,
+        bytes toAddress,
+        uint256 fromAmount,
+        bytes payLoad
+    );
+
     event InterReceive(
         bytes32 indexed orderId,
         uint256 indexed fromChain,

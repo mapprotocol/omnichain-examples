@@ -20,12 +20,7 @@ module.exports = async (taskArgs) => {
     let chains = taskArgs.chain.split(",");
     let addresses = taskArgs.address.split(",");
 
-    await (
-        await token.connect(deployer).setTrustedAddress(
-                chains,
-                addresses
-            )
-    ).wait();
+    await (await token.connect(deployer).setTrustedAddress(chains, addresses)).wait();
 
     console.log(`${taskArgs.token} set trust address  ${taskArgs.address} to chain ${taskArgs.chain}  successful`);
 };

@@ -45,7 +45,12 @@ contract MORC20Token is MORC20Core, ERC20 {
         uint256 _fromAmount,
         uint256 _fromDecimals
     ) internal virtual override returns (uint256 amount, uint256 decimals) {
-        amount = (_fromAmount * 10 ** tokenDecimals) / 10 ** _fromDecimals;
+        if (tokenDecimals == _fromDecimals) {
+            amount = _fromAmount;
+        } else {
+            amount = (_fromAmount * 10 ** tokenDecimals) / 10 ** _fromDecimals;
+        }
+
         _mint(_receiverAddress, amount);
 
         return (amount, tokenDecimals);

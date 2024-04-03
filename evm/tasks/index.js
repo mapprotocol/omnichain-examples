@@ -64,7 +64,10 @@ task("deployMorc20Proxy", "Deploy morc20 proxy", require("./MRC20Token/deployMor
     .addOptionalParam("factory", "mos contract address", DEPLOY_FACTORY, types.string);
 
 task("deployMorc20TraitToken", "Deploy some trait Morc20 token", require("./MRC20Token/deployMorc20TraitToken"))
-    .addParam("token", "This is the example token name: MORC20MintableToken, MORC20PausableToken, MORC20PermitToken, MORC20CommonToken")
+    .addParam(
+        "token",
+        "The example token name: MORC20MintableToken/MORC20PausableToken/MORC20PermitToken/MORC20CommonToken"
+    )
     .addParam("name", "This is the token name")
     .addParam("symbol", "This is the token symbol")
     .addParam("totalsupply", "This is the token totalsupply")
@@ -82,4 +85,4 @@ task("interTransfer", "Inter transfer Morc20 token", require("./MRC20Token/inter
 task("setTrustAddress", "Morc20 token set trust address", require("./MRC20Token/setTrustAddress"))
     .addOptionalParam("token", "token address", "0x8c8afd3ff50c4D8e0323815b29E510a77D2c41fd", types.string)
     .addParam("chain", "chain id")
-    .addParam("address", "trust address")
+    .addParam("address", "trust address");

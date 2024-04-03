@@ -63,14 +63,14 @@ abstract contract MapoExecutor is Ownable, IMapoExecutor {
         bytes memory _payload,
         uint256 _gasLimit
     ) internal virtual returns (bytes32) {
-        bytes memory tempFromAddress = trustedList[_toChain];
-        require(tempFromAddress.length > 0, "MapoExecutor: invalid remote trust address");
+        bytes memory toAddress = trustedList[_toChain];
+        require(toAddress.length > 0, "MapoExecutor: invalid remote trust address");
 
         bytes memory messageDataBytes;
         if (_toType == MESSAGE_TYPE_MESSAGE) {
-            messageDataBytes = abi.encode(false, IMOSV3.MessageType.MESSAGE, tempFromAddress, _payload, _gasLimit, 0);
+            messageDataBytes = abi.encode(false, IMOSV3.MessageType.MESSAGE, toAddress, _payload, _gasLimit, 0);
         } else if (_toType == MESSAGE_TYPE_CALL_DATA) {
-            messageDataBytes = abi.encode(false, IMOSV3.MessageType.CALLDATA, tempFromAddress, _payload, _gasLimit, 0);
+            messageDataBytes = abi.encode(false, IMOSV3.MessageType.CALLDATA, toAddress, _payload, _gasLimit, 0);
         } else {
             require(false, "MapoExecutor: invalid message type");
         }
@@ -97,7 +97,10 @@ abstract contract MapoExecutor is Ownable, IMapoExecutor {
         return trustedList[_remoteChainId];
     }
 
-    function setTrustedAddress(uint256[] calldata _remoteChainIds, bytes[] calldata _remoteAddresses) external onlyOwner {
+    function setTrustedAddress(
+        uint256[] calldata _remoteChainIds,
+        bytes[] calldata _remoteAddresses
+    ) external onlyOwner {
         require(_remoteChainIds.length == _remoteAddresses.length, "MapoExecutor: address or chainId not match");
         for (uint256 i = 0; i < _remoteChainIds.length; i++) {
             trustedList[_remoteChainIds[i]] = _remoteAddresses[i];

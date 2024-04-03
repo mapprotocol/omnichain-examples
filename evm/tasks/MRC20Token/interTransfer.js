@@ -13,8 +13,6 @@ module.exports = async (taskArgs) => {
 
     console.log("deployer address:", deployer.address);
 
-
-
     let token = await ethers.getContractAt("MORC20Token", taskArgs.token);
 
     console.log("token address:", token.address);
@@ -31,12 +29,9 @@ module.exports = async (taskArgs) => {
     console.log("fee amount:", fee[1]);
 
     await (
-        await token.connect(deployer).interTransfer(
-                deployer.address,
-                taskArgs.chain,
-                to,
-                taskArgs.amount,
-                taskArgs.gas, {
+        await token
+            .connect(deployer)
+            .interTransfer(deployer.address, taskArgs.chain, to, taskArgs.amount, taskArgs.gas, {
                 value: fee[1],
             })
     ).wait();

@@ -101,7 +101,7 @@ abstract contract MORC20Core is MapoExecutor, ERC165, IMORC20 {
 
         bytes32 orderId = _mosTransferOut(_toChainId, MESSAGE_TYPE_MESSAGE, payload, _gasLimit);
 
-        emit InterTransfer(orderId, _fromAddress, _toChainId, _toAddress, _fromAmount);
+        emit InterTransferAndCall(orderId, _fromAddress, _toChainId, _toAddress, _fromAmount, prePayload);
     }
 
     function _interReceive(uint256 _fromChain, bytes32 _orderId, bytes memory _payload) internal virtual {
@@ -197,6 +197,8 @@ abstract contract MORC20Core is MapoExecutor, ERC165, IMORC20 {
 
         (bytes32 interType, bytes memory payload) = abi.decode(_message, (bytes32, bytes));
 
+        orderList[_orderId] = true;
+
         if (interType == INTERCHAIN_TRANSFER) {
             _interReceive(_fromChain, _orderId, payload);
         } else if (interType == INTERCHAIN_TRANSFER_AND_CALL) {
@@ -204,8 +206,6 @@ abstract contract MORC20Core is MapoExecutor, ERC165, IMORC20 {
         } else {
             revert("MORC20Core: unknown message type");
         }
-
-        orderList[_orderId] = true;
 
         return payload;
     }
