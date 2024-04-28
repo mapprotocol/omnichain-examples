@@ -41,7 +41,7 @@ contract MORC20Proxy is MORC20Core {
         // check total outbound amount
         outAmount += _fromAmount;
 
-        return (amount, tokenDecimals);
+        return (_fromAmount, tokenDecimals);
     }
 
     function _createTokenTo(
