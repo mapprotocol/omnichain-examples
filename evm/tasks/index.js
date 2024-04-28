@@ -80,9 +80,18 @@ task("interTransfer", "Inter transfer Morc20 token", require("./MRC20Token/inter
     .addParam("chain", "chain id")
     .addParam("amount", "token amount")
     .addOptionalParam("to", "to address", "", types.string)
-    .addOptionalParam("gas", "gas limit", 2000000, types.int);
+    .addOptionalParam("gas", "gas limit", 100000, types.int);
 
 task("setTrustAddress", "Morc20 token set trust address", require("./MRC20Token/setTrustAddress"))
     .addOptionalParam("token", "token address", "0x8c8afd3ff50c4D8e0323815b29E510a77D2c41fd", types.string)
     .addParam("chain", "chain id")
     .addParam("address", "trust address");
+
+task("getFee", "Morc20 token set trust address", require("./MRC20Token/getTrustAddress"))
+    .addOptionalParam("token", "token address", "0x8c8afd3ff50c4D8e0323815b29E510a77D2c41fd", types.string)
+    .addParam("chain", "chain id")
+    .addOptionalParam("gas", "gas limit", 100000, types.int);
+
+task("transferOwner", "transferOwner", require("./transferOwner"))
+    .addOptionalParam("token", "token address", "0x8c8afd3ff50c4D8e0323815b29E510a77D2c41fd", types.string)
+    .addParam("owner", "new owner address");

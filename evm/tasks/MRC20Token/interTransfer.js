@@ -13,28 +13,36 @@ module.exports = async (taskArgs) => {
 
     console.log("deployer address:", deployer.address);
 
-    let token = await ethers.getContractAt("MORC20Token", taskArgs.token);
+    let morc20 = await ethers.getContractAt("IMORC20", taskArgs.token);
+    console.log("morc20 address:", morc20.address);
 
-    console.log("token address:", token.address);
+    let tokenAddr = await morc20.connect(deployer).token();
+    console.log("token address:", tokenAddr);
+
+    let token = await ethers.getContractAt("IERC20Metadata", tokenAddr);
+    let decimals = await token.decimals();
+    console.log("token decimals:", decimals);
+
+    let amount = ethers.utils.parseUnits(taskArgs.amount, decimals);
+    console.log("token amount:", amount);
 
     let to = taskArgs.to;
     if (to === "") {
         to = deployer.address;
     }
-
     console.log("to address:", to);
 
-    let fee = await token.connect(deployer).estimateFee(taskArgs.chain, taskArgs.gas);
+    let fee = await morc20.connect(deployer).estimateFee(taskArgs.chain, taskArgs.gas);
     console.log("fee token:", fee[0]);
     console.log("fee amount:", fee[1]);
 
-    await (
-        await token
-            .connect(deployer)
-            .interTransfer(deployer.address, taskArgs.chain, to, taskArgs.amount, taskArgs.gas, {
-                value: fee[1],
-            })
-    ).wait();
+    await token.approve(morc20.address, amount);
+
+    await morc20.connect(deployer)
+        .interTransfer(deployer.address, taskArgs.chain, to, amount, taskArgs.gas, {
+            value: fee[1],
+            gasLimit: 500000
+        });
 
     console.log(`${taskArgs.token} transfer out  ${taskArgs.amount} to chain ${taskArgs.chain}  successful`);
 };

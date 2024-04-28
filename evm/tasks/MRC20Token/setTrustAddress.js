@@ -13,7 +13,7 @@ module.exports = async (taskArgs) => {
 
     console.log("deployer address:", deployer.address);
 
-    let token = await ethers.getContractAt("MORC20Token", taskArgs.token);
+    let token = await ethers.getContractAt("MORC20Core", taskArgs.token);
 
     console.log("token address:", token.address);
 
