@@ -45,8 +45,7 @@ module.exports = async (taskArgs) => {
         let amount = ethers.utils.parseUnits(taskArgs.amount, decimals);
         console.log("token amount:", amount);
 
-        await token.connect(deployer)
-            .transfer(to, amount);
+        await token.connect(deployer).transfer(to, amount);
     }
 
 
