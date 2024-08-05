@@ -1,3 +1,5 @@
+const {getTronContract} = require("../utils/create");
+
 function stringToHex(str) {
     return str
         .split("")
@@ -36,12 +38,14 @@ module.exports = async (taskArgs) => {
     console.log("fee token:", fee[0]);
     console.log("fee amount:", fee[1]);
 
-    await token.approve(morc20.address, amount);
+    if (token.address !== morc20.address) {
+        await token.approve(morc20.address, amount);
+    }
 
     await morc20.connect(deployer)
         .interTransfer(deployer.address, taskArgs.chain, to, amount, taskArgs.gas, {
             value: fee[1],
-            gasLimit: 500000
+            gasLimit: 1500000
         });
 
     console.log(`${taskArgs.token} transfer out  ${taskArgs.amount} to chain ${taskArgs.chain}  successful`);

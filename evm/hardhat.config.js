@@ -60,12 +60,12 @@ module.exports = {
       accounts: accounts
     },
     Bsc: {
-      url: `https://bsc-dataseed1.binance.org/`,
+      url: `https://bsc.blockpi.network/v1/rpc/public`,
       chainId : 56,
       accounts: accounts
     },
     BscTest: {
-      url: `https://data-seed-prebsc-1-s1.binance.org:8545`,
+      url: `https://data-seed-prebsc-2-s1.binance.org:8545/`,
       chainId : 97,
       accounts: accounts
      // gasPrice: 11 * 1000000000
@@ -75,9 +75,9 @@ module.exports = {
       chainId : 1,
       accounts: accounts
     },
-    Goerli: {
-      url: `https://goerli.infura.io/v3/` + INFURA_KEY,
-      chainId : 5,
+    Sepolia: {
+      url: `https://1rpc.io/sepolia`,
+      chainId: 11155111,
       accounts: accounts
     },
     Klay: {
@@ -92,8 +92,18 @@ module.exports = {
     },
     ArbitrumSepolia: {
       chainId: 421614,
-      url: `https://arbitrum-sepolia.blockpi.network/v1/rpc/public`,
+      url: `https://sepolia-rollup.arbitrum.io/rpc`,
       accounts: accounts
+    },
+    DodoTest: {
+      url: `https://dodochain-testnet.alt.technology`,
+      chainId : 53457,
+      accounts: accounts
+    },
+    TronTest: {
+      url: `https://nile.trongrid.io/jsonrpc`,
+      chainId: 3448148188,
+      accounts: accounts,
     },
   },
   solidity: {
