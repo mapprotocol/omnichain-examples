@@ -39,15 +39,15 @@ module.exports = async (taskArgs) => {
         console.log("fee token:", fee[0]);
         console.log("fee amount:", fee[1]);
 
-        let trxAmount = ethers.utils.formatUnits(fee[1], 18);
-        let tronFee = ethers.utils.parseUnits(trxAmount, 6);
-        console.log("tron fee amount:", tronFee);
+        //let trxAmount = ethers.utils.formatUnits(fee[1], 18);
+        //let tronFee = ethers.utils.parseUnits(trxAmount, 6);
+        //console.log("tron fee amount:", tronFee);
 
         if (token.address !== morc20.address) {
             await token.approve(morc20.address, amount);
         }
 
-        await morc20.interTransfer(deployer.address, taskArgs.chain, to, amount, taskArgs.gas).send({callValue:tronFee});
+        await morc20.interTransfer(deployer.address, taskArgs.chain, to, amount, taskArgs.gas).send({callValue: fee[1]});
     } else {
         let morc20 = await ethers.getContractAt("IMORC20", taskArgs.token);
         console.log("morc20 address:", morc20.address);
